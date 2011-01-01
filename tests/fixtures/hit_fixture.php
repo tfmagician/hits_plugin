@@ -9,7 +9,7 @@ class HitFixture extends CakeTestFixture
         'created'   => array('type' => 'datetime', 'null' => false, 'default' => NULL),
         'modified'  => array('type' => 'datetime', 'null' => false, 'default' => NULL),
         'indexes' => array(
-            'PRIMARY' => array('column' => 'url',  'unique' => 0),
+            'PRIMARY' => array('column' => 'url',  'unique' => 1),
             'hits'    => array('column' => 'hits', 'unique' => 0),
         ),
         'tableParameters' => array(

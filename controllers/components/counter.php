@@ -39,8 +39,10 @@ class CounterComponent extends Object
      */
     function initialize(&$Controller, $config = array())
     {
-        $this->Hit =& ClassRegistry::init('Hit');
-        $this->ignore = $config['ignore'] + $this->ignore;
+        $this->Hit =& ClassRegistry::init('Hits.Hit');
+        if (isset($config['ignore'])) {
+            $this->ignore = $config['ignore'] + $this->ignore;
+        }
     }
 
     /**
@@ -64,7 +66,7 @@ class CounterComponent extends Object
                 }
             }
         }
-        $this->Hit->count($Controller->params['url']['url']);
+        $this->Hit->count('/'.$Controller->params['url']['url']);
     }
 
 }

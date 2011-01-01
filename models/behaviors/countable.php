@@ -34,17 +34,22 @@ class CountableBehavior extends ModelBehavior
             $args[] = sprintf('"%s"', $separated);
             $args[] = sprintf('`%s`.`%s`', $Model->alias, str_replace(':', '', $match));
         }
-        $Model->virtualFields['url'] = 'CONCAT('.implode(', ', $args).')';
-
-        $Model->belongsTo = array(
-            'Hits.Hit' => array(
-                'className' => 'Hits.Hit',
-                'foreignKey' => 'url',
-                'conditions' => array(),
-                'fields' => null,
-                'order' => null,
-                'dependent' => false,
+        $Model->bindModel(
+            array(
+                'belongsTo' => array(
+                    'Hit' => array(
+                        'className' => 'Hits.Hit',
+                        'foreignKey' => false,
+                        'conditions' => array(
+                            '`Hit`.`url` = '.'CONCAT('.implode(', ', $args).')',
+                        ),
+                        'fields' => null,
+                        'order' => null,
+                        'dependent' => true,
+                    ),
+                ),
             ),
+            false
         );
     }
 

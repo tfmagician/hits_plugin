@@ -37,7 +37,7 @@ class CounterComponentTestCase extends CakeTestCase
         $Hit->expectOnce('count', array('/this/is/url'));
         $this->Controller->params = array(
             'url' => array(
-                'url' => '/this/is/url',
+                'url' => 'this/is/url',
             ),
         );
         $this->CounterComponent->startup($this->Controller);
@@ -59,7 +59,7 @@ class CounterComponentTestCase extends CakeTestCase
 
         $this->Controller->params = array(
             'url' => array(
-                'url' => '/this/is/url',
+                'url' => 'this/is/url',
             ),
         );
         $this->CounterComponent->ignore = array(
@@ -80,7 +80,7 @@ class CounterComponentTestCase extends CakeTestCase
 
         $this->Controller->params = array(
             'url' => array(
-                'url' => '/this/is/url',
+                'url' => 'this/is/url',
             ),
         );
         $this->CounterComponent->ignore = array(
