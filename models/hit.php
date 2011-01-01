@@ -9,6 +9,14 @@ class Hit extends HitsAppModel
 {
 
     /**
+     * primary key
+     *
+     * @access public
+     * @var string
+     */
+    var $primaryKey = 'url';
+
+    /**
      * Increase count for a page.
      *
      * @param string $url  URL string for the page counted.
@@ -19,7 +27,6 @@ class Hit extends HitsAppModel
         $params = array(
             'conditions' => array($this->alias.'.url = ' => $url),
             'fields' => array(
-                $this->alias.'.'.$this->primaryKey,
                 $this->alias.'.url',
                 $this->alias.'.hits',
             ),
