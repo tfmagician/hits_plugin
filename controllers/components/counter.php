@@ -49,14 +49,19 @@ class CounterComponent extends Object
      *
      * @access public
      * @param string $ip
+     * @param string $url
      * @return boolean  true if this access is second.
      */
-    function isSecondAccess($ip)
+    function isSecondAccess($ip, $url)
     {
-        if (Cache::read($ip, 'hits')) {
+        if (!$cacheURLs = Cache::read($ip, 'hits')) {
+            $cacheURLs = array();
+        }
+        if (in_array($url, $cacheURLs)) {
             return true;
         }
-        Cache::write($ip, true, 'hits');
+        $cacheURLs[] = $url;
+        Cache::write($ip, $cacheURLs, 'hits');
         return false;
     }
 
@@ -98,8 +103,9 @@ class CounterComponent extends Object
                 }
             }
         }
-        if (!$this->isSecondAccess($ip)) {
-            $this->Hit->count('/'.$Controller->params['url']['url']);
+        $url = '/'.$Controller->params['url']['url'];
+        if (!$this->isSecondAccess($ip, $url)) {
+            $this->Hit->count($url);
         }
     }
 
