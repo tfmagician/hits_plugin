@@ -30,6 +30,42 @@ class CounterComponent extends Object
     );
 
     /**
+     * Cache config for CounterComponent::isSecondAccess().
+     *
+     * @access public
+     * @var array
+     */
+    var $cacheConfig = array(
+        'engine' => 'File',
+        'duration'=> 3600,
+        'path' => CACHE,
+        'prefix' => 'hits_',
+        'lock' => false,
+        'serialize' => true,
+    );
+
+    /**
+     * Checks second access by IP address.
+     *
+     * @access public
+     * @param string $ip
+     * @param string $url
+     * @return boolean  true if this access is second.
+     */
+    function isSecondAccess($ip, $url)
+    {
+        if (!$cacheURLs = Cache::read($ip, 'hits')) {
+            $cacheURLs = array();
+        }
+        if (in_array($url, $cacheURLs)) {
+            return true;
+        }
+        $cacheURLs[] = $url;
+        Cache::write($ip, $cacheURLs, 'hits');
+        return false;
+    }
+
+    /**
      * Initialization
      *
      * @access public
@@ -39,6 +75,7 @@ class CounterComponent extends Object
      */
     function initialize(&$Controller, $config = array())
     {
+        Cache::config('hits', $this->cacheConfig);
         $this->Hit =& ClassRegistry::init('Hits.Hit');
         if (isset($config['ignore'])) {
             $this->ignore = $config['ignore'] + $this->ignore;
@@ -66,7 +103,10 @@ class CounterComponent extends Object
                 }
             }
         }
-        $this->Hit->count('/'.$Controller->params['url']['url']);
+        $url = '/'.$Controller->params['url']['url'];
+        if (!$this->isSecondAccess($ip, $url)) {
+            $this->Hit->count($url);
+        }
     }
 
 }

@@ -21,14 +21,19 @@ class CounterComponentTestCase extends CakeTestCase
     {
         $this->Controller = new TestController();
         $this->CounterComponent = new CounterComponent();
+        $this->CounterComponent->initialize($this->Controller);
         $this->CounterComponent->Hit = new CounterComponent_Hit();
         $this->CounterComponent->RequestHandler = new CounterComponent_RequestHandler();
+
+        Configure::write('Cache.disable', false);
+        Cache::clear();
     }
 
     function endTest()
     {
         unset($this->Controller);
         unset($this->CounterComponent);
+        Configure::write('debug', 2);
     }
 
     function testStartup()
@@ -100,6 +105,34 @@ class CounterComponentTestCase extends CakeTestCase
         }
     }
 
+    function testStartupIgnoredBySecondAccess()
+    {
+        Configure::write('debug', 0);
 
+        $Hit = $this->CounterComponent->Hit;
+        $Hit->expectCallCount('count', 2);
+
+        $RequestHandler = $this->CounterComponent->RequestHandler;
+        $RequestHandler->expectCallCount('getClientIP', 3);
+        $RequestHandler->expectAt(0, 'getClientIP', array());
+        $RequestHandler->setReturnValueAt(0, 'getClientIP', '100.100.100.101');
+        $RequestHandler->expectAt(1, 'getClientIP', array());
+        $RequestHandler->setReturnValueAt(1, 'getClientIP', '100.100.100.100');
+        $RequestHandler->expectAt(2, 'getClientIP', array());
+        $RequestHandler->setReturnValueAt(2, 'getClientIP', '100.100.100.101');
+
+        $this->Controller->params = array(
+            'url' => array(
+                'url' => 'this/is/url',
+            ),
+        );
+        $this->CounterComponent->ignore = array(
+            'ipAddresses' => array(),
+            'userAgents' => array(),
+        );
+        for ($i = 0; $i < 3; $i ++) {
+            $this->CounterComponent->startup($this->Controller);
+        }
+    }
 
 }
