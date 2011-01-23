@@ -59,7 +59,7 @@ class CounterComponent extends Object
                 return;
             }
         }
-        if ($agent = env('HTTP_UESR_AGENT')) {
+        if ($agent = env('HTTP_USER_AGENT')) {
             foreach ($this->ignore['userAgents'] as $ignore) {
                 if (preg_match('/'.$ignore.'/iu', $agent)) {
                     return;
